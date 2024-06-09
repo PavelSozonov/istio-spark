@@ -1,0 +1,89 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: istio-ingressgateway-spark
+spec:
+  profile: default
+  components:
+    ingressGateways:
+      - namespace: istio-system
+        name: istio-ingressgateway-spark
+        enabled: true
+        k8s:
+          serviceAnnotations:
+            metallb.universe.tf/address-pool: jupyter-spark
+            metallb.universe.tf/ip-allocated-from-pool: jupyter-spark
+          service:
+            ports:
+              - port: 15021
+                targetPort: 15021
+                name: status-port
+                protocol: TCP
+              - port: 8095
+                targetPort: 8095
+                name: http-spark-p8095
+                protocol: TCP
+              - port: 8096
+                targetPort: 8096
+                name: http-spark-p8096
+                protocol: TCP
+              - port: 8097
+                targetPort: 8097
+                name: http-spark-p8097
+                protocol: TCP
+              - port: 8098
+                targetPort: 8098
+                name: http-spark-p8098
+                protocol: TCP
+              - port: 8099
+                targetPort: 8099
+                name: http-spark-p8099
+                protocol: TCP
+              - port: 8100
+                targetPort: 8100
+                name: http-spark-p8100
+                protocol: TCP
+              - port: 8101
+                targetPort: 8101
+                name: http-spark-p8101
+                protocol: TCP
+              - port: 8102
+                targetPort: 8102
+                name: http-spark-p8102
+                protocol: TCP
+              - port: 8103
+                targetPort: 8103
+                name: http-spark-p8103
+                protocol: TCP
+              - port: 8104
+                targetPort: 8104
+                name: http-spark-p8104
+                protocol: TCP
+              - port: 8105
+                targetPort: 8105
+                name: http-spark-p8105
+                protocol: TCP
+              - port: 8106
+                targetPort: 8106
+                name: http-spark-p8106
+                protocol: TCP
+              - port: 8107
+                targetPort: 8107
+                name: http-spark-p8107
+                protocol: TCP
+              - port: 8108
+                targetPort: 8108
+                name: http-spark-p8108
+                protocol: TCP
+              - port: 8109
+                targetPort: 8109
+                name: http-spark-p8109
+                protocol: TCP
+              - port: 8110
+                targetPort: 8110
+                name: http-spark-p8110
+                protocol: TCP
+              - port: 8111
+                targetPort: 8111
+                name: http-spark-p8111
+                protocol: TCP
