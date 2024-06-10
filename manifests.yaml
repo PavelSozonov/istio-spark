@@ -1,0 +1,145 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: istio-ingressgateway
+  namespace: istio-system-spark
+  annotations:
+    metallb.universe.tf/address-pool: jupyter-spark
+    metallb.universe.tf/ip-allocated-from-pool: jupyter-spark
+spec:
+  type: LoadBalancer
+  selector:
+    istio: ingressgateway
+  ports:
+    - port: 15021
+      targetPort: 15021
+      name: status-port
+      protocol: TCP
+    - port: 8095
+      targetPort: 8095
+      name: http-spark-p8095
+      protocol: TCP
+    - port: 8096
+      targetPort: 8096
+      name: http-spark-p8096
+      protocol: TCP
+    - port: 8097
+      targetPort: 8097
+      name: http-spark-p8097
+      protocol: TCP
+    - port: 8098
+      targetPort: 8098
+      name: http-spark-p8098
+      protocol: TCP
+    - port: 8099
+      targetPort: 8099
+      name: http-spark-p8099
+      protocol: TCP
+    - port: 8100
+      targetPort: 8100
+      name: http-spark-p8100
+      protocol: TCP
+    - port: 8101
+      targetPort: 8101
+      name: http-spark-p8101
+      protocol: TCP
+    - port: 8102
+      targetPort: 8102
+      name: http-spark-p8102
+      protocol: TCP
+    - port: 8103
+      targetPort: 8103
+      name: http-spark-p8103
+      protocol: TCP
+    - port: 8104
+      targetPort: 8104
+      name: http-spark-p8104
+      protocol: TCP
+    - port: 8105
+      targetPort: 8105
+      name: http-spark-p8105
+      protocol: TCP
+    - port: 8106
+      targetPort: 8106
+      name: http-spark-p8106
+      protocol: TCP
+    - port: 8107
+      targetPort: 8107
+      name: http-spark-p8107
+      protocol: TCP
+    - port: 8108
+      targetPort: 8108
+      name: http-spark-p8108
+      protocol: TCP
+    - port: 8109
+      targetPort: 8109
+      name: http-spark-p8109
+      protocol: TCP
+    - port: 8110
+      targetPort: 8110
+      name: http-spark-p8110
+      protocol: TCP
+    - port: 8111
+      targetPort: 8111
+      name: http-spark-p8111
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: istio-ingressgateway
+  namespace: istio-system-spark
+spec:
+  selector:
+    matchLabels:
+      istio: ingressgateway
+  template:
+    metadata:
+      annotations:
+        # Select the gateway injection template (rather than the default sidecar template)
+        inject.istio.io/templates: gateway
+      labels:
+        # Set a unique label for the gateway. This is required to ensure Gateways can select this workload
+        istio: ingressgateway
+        # Enable gateway injection. If connecting to a revisioned control plane, replace with "istio.io/rev: revision-name"
+        sidecar.istio.io/inject: "true"
+    spec:
+      # Allow binding to all ports (such as 80 and 443)
+      securityContext:
+        sysctls:
+          - name: net.ipv4.ip_unprivileged_port_start
+            value: "0"
+      containers:
+        - name: istio-proxy
+          image: auto # The image will automatically update each time the pod starts.
+          # Drop all privileges, allowing to run as non-root
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+            runAsUser: 1337
+            runAsGroup: 1337
+---
+# Set up roles to allow reading credentials for TLS
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: istio-ingressgateway-sds
+  namespace: istio-system-spark
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: istio-ingressgateway-sds
+  namespace: istio-system-spark
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: istio-ingressgateway-sds
+subjects:
+  - kind: ServiceAccount
+    name: default
